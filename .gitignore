@@ -101,3 +101,15 @@ week_2_workflow_orchestration/homework/q1/orchestrations_gcp/.terraform/provider
 /week_3_data_warehouse/homework/2024/new_data
 /week_3_data_warehouse/workshops/dlt_project
 /week_3_data_warehouse/workshops/dlt_resources
+
+
+
+/week_5_batch/code/.ipynb_checkpoints/*.ipynb
+/week_5_batch/code/data/*
+/week_5_batch/code/fhvhv/*
+/week_5_batch/code/fhv_tripdata_2019-10.csv
+/week_5_batch/code/fhvhv_tripdata_2021-01.csv
+/week_5_batch/code/fhvhv_tripdata_2021-01.parquet
+/week_5_batch/code/head.csv
+/week_5_batch/code/head.parquet
+/week_5_batch/code/taxi_zone_lookup.csv
