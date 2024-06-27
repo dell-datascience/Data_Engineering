@@ -176,9 +176,9 @@ gcs_block = GcsBucket.load("gcs-bucket")
 
         1. go to prefect cloud and create API keys
 
-         API Keys: pnu_qAPZT8DpmvaTDoTA5EPxjFFwLAycLS3fokcu
+         API Keys: <API_KEYS>
          or run
-         `prefect cloud login -k pnu_qAPZT8DpmvaTDoTA5EPxjFFwLAycLS3fokcu`
+         `prefect cloud login -k <API_KEY>`
 
          2. create `docker block`, `bigquery block`, `gcs bucket block`, `gcp credentials`
 
@@ -210,7 +210,7 @@ gcs_block = GcsBucket.load("gcs-bucket")
          5. run the deployment
         `prefect deployment run parent_flow_runner/docker-flow -p "month=7" -p "color=yellow" -p "year=2020"`
 
-10. create github block
+1.  create github block
 
 
 ```python
