@@ -4,9 +4,9 @@
 
 # Week 3 :Data warehouse
 
-![alt text](image-95.png)
+![alt text](../images/image-95.png)
 
-![alt text](image-96.png)
+![alt text](../images/image-96.png)
 
 | Column 1 | OLTP | OLAP |
 |----------|----------|----------|
@@ -20,7 +20,7 @@
 
 ## Google Big query
 
-![Alt text](images/image.png)
+![Alt text](../images/image.png)
 
 BigQuery (BQ) is a Data Warehouse solution offered by Google Cloud Platform.
 
