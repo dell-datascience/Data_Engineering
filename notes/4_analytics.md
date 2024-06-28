@@ -1,3 +1,7 @@
+->Back: [Lesson 3: Data Warehouse](3_data_warehouse.md)
+
+->Next: [Lesson 5: Batch Processing](5_batch_processing.md)
+
 # Analytics Engineering
 
 ![Alt text](../images/image-13.png)
@@ -1414,3 +1418,6 @@ Creating a report in Google Data Studio is very simple, following the current tr
 Controls: Objects that allow us to interact with data in visualizations, for example, selection filters, boxes for entering text, drop-down lists with all the values of a dimension, etc.
 Graphs: or visualizations, are all kinds of statistical graphs that we can use to analyze and present information: pie charts, bars, lines, bubbles, etc. Depending on the selected chart, we must choose one or more dimensions and one or more metrics.
 After a few minutes of effort, we can enjoy our first report in Google Data Studio:
+
+
+->Next: [Lesson 5: Batch Processing](5_batch_processing.md)

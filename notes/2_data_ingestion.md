@@ -1,3 +1,7 @@
+>Back: [Lesson 1: Introduction to Data Engineering](1_introduction.md)
+
+->Next: [Lesson 3: Data Warehouse](3_data_warehouse.md)
+
 # Week2
 
 ## orchetrating dataflow with prefect
@@ -294,3 +298,5 @@ dev:
 
 ![alt text](../images/image-94.png)
 <p align='center'>testing the docker postgres connection</p>
+
+->Next: [Lesson 3: Data Warehouse](3_data_warehouse.md)
