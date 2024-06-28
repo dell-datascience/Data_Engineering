@@ -11,7 +11,7 @@ Below you will find links to the notes for each lesson.
 
 Additionally, the following gists with cheatsheets are available.
 
-* [Virtualization and containerization](virtualization_containerization.md)
-* [Python environment management](python_environment.md)
-* [Git cheatsheet](git_cheatsheet.md)
-* [Create a VM instance for the DE zoomcamp](create_vm_instance.md)
+* [Virtualization and containerization](virtualisation_and_containerisation.md)
+* [Python environment management](python_environment_management.md)
+* [Git cheatsheet](git_cheat_sheet.md)
+* [Create a VM instance for the DE zoomcamp](creating_VM_instance_for_data_engineering.md)
