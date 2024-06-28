@@ -50,7 +50,7 @@ A **data pipeline** is a service that receives data as input and outputs more da
 Such as reading a json file, transforming the data and storing it as a table
 in a PostgreSQL database.
 
-![alt text](/images/image-117.png)
+![alt text](../images/image-117.png)
 
 <p align='center'> Data pipeline</p>
 
@@ -204,7 +204,7 @@ docker run -it \
   postgres:13
 ```
 
-![alt text](/images/image-118.png)
+![alt text](../images/image-118.png)
 
 <p align='center'>postgresSQL docker execution</p>
 
@@ -333,7 +333,7 @@ docker run -it \
   --name pg-database \
   postgres:13
 ```
-![alt text](/images/image-119.png)
+![alt text](../images/image-119.png)
 <p align='center'> Succesfull run of postgreSQL docker</p>
 
 
@@ -364,17 +364,17 @@ URL: [`http://localhost:8080/browser/`](http://localhost:8080/browser/)
 You should now be able to load pgAdmin on a web browser by browsing to [localhost:8080 ](http://localhost:8080/browser/).
 Use the same email and password you used for running the container to log in.
 
-![alt text](/images/image-120.png)
+![alt text](../images/image-120.png)
 <p align='center'> pgadmin landing page</p>
 
 Click tool -> register -> servers
-![alt text](/images/image-121.png)
+![alt text](../images/image-121.png)
 <p align='center'>creating database login</p>
 
 Give the Server a name and under Connection add the same host name, user and password you used when running the container.
 
-![alt text](/images/image-122.png)
-![alt text](/images/image-123.png)
+![alt text](../images/image-122.png)
+![alt text](../images/image-123.png)
 
 Click on Save. You should now be connected to the database.
 
@@ -385,7 +385,7 @@ ___
 
 Open the jupyter noteboook and run the cells to execute the codes.
 
-![alt text](/images/image-124.png)
+![alt text](../images/image-124.png)
 <p align='center'>Data successfull read into ny-taxi databse</p>
 
 

@@ -274,7 +274,7 @@ docker compose up
 
 Now, navigate to <http://localhost:6789> in your browser! Voila! You're ready to get started with the course.
 
-![alt text](/images/image-91.png)
+![alt text](../images/image-91.png)
 
 ## define docker postgress connector in `io_config.yml` in mage files. the postgres instance is defined in docker
 
@@ -289,8 +289,8 @@ dev:
   POSTGRES_PORT: "{{ env_var('POSTGRES_PORT') }}"
 ```
 
-![alt text](/images/image-93.png)
+![alt text](../images/image-93.png)
 <p align='center'>specifying the postgress connector</p>
 
-![alt text](/images/image-94.png)
+![alt text](../images/image-94.png)
 <p align='center'>testing the docker postgres connection</p>
