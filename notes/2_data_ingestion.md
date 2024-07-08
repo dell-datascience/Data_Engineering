@@ -17,10 +17,16 @@
     - [Flow](#flow)
     - [Task](#task)
     - [Blocks](#blocks)
+- [Build workflow with Prefect](#build-workflow-with-prefect)
 - [Configure Block GCP Cloud Storage Bucket Connector](#configure-block-gcp-cloud-storage-bucket-connector)
+- [Pipelines in Python](#pipelines-in-python)
+- [Parameterizing the Pipeline Flow](#parameterizing-the-pipeline-flow)
+- [Prefect Deployments](#prefect-deployments)
+  - [Create Prefect Deployment by python](#create-prefect-deployment-by-python)
+- [Create Prefect Deployment by CLI (command line)](#create-prefect-deployment-by-cli-command-line)
 - [Orchestration using Docker via a Dockerfile deployment](#orchestration-using-docker-via-a-dockerfile-deployment)
-- [Creating a Docker block in code: an alternative to creating a DockerContainer block in the UI](#creating-a-docker-block-in-code-an-alternative-to-creating-a-dockercontainer-block-in-the-ui)
 - [Prefect cloud](#prefect-cloud)
+- [Prefect Cloud Automations](#prefect-cloud-automations)
 - [Orchestrating dataflow with Mage](#orchestrating-dataflow-with-mage)
 - [Mage setup](#mage-setup)
 
@@ -162,53 +168,564 @@ from prefect_gcp.cloud_storage import GcsBucket
 gcs_block = GcsBucket.load("gcs-bucket")
 ```
 
+# Build workflow with Prefect
+
+First boot Prefect using the following command within the terminal:
+
+```shell
+prefect server start
+```
+
+![alt text](../images/image-127.png)
+<p align='center'>Output when starting Prefect</p>
 # Configure Block GCP Cloud Storage Bucket Connector
 
-1; Start prefect server in terminal: `prefect server start`
+Then, register the Prefect Connector module for Google Cloud Platform (GCP) from the command line to make it available for use in your flow. To do this, run the following command:
 
-To register the **Prefect Connector** module for **Google Cloud Platform** from the command line and make it available for use in our flow, follow these steps:
-
-2; Start by opening the command line interface.
-
-3; Run the following command to register the module:
-
-```
+```shell
 prefect block register -m prefect_gcp
 ```
 
 This command will register the **Prefect Connector** module for **Google Cloud Platform** and make it accessible for use in your flow.
 
+
 4; Once the registration is complete, you can proceed to use the module in your flow to connect with Google Cloud Platform services.
 
-Remember to replace any placeholder values with the actual values specific to your setup.
+To set up the Block that stores the connection to our GCP Cloud Storage, follow these steps:
 
+* In the GCP console, create a Service Account with Storage Admin permissions for accessing the Cloud Storage Bucket.
+* Generate a key for the Service Account in JSON format.
+  - GCP Credentials: Create a new credential by copying the JSON key of the Service Account. Give it a name, such as "google-creds".
 
 5; Populate the block with conection details to our GCP Storage. Go to the prefect GUI -> blocks -> search for `GCS Bucket`:
 
-    * **Block name**: name for Block `gcs-bucket`
-    * **Bucket**: Name of the cloud storage created in GCP
-    * **GCP Credentials**:
-        **Block Name**: name of credential. `google-creds`
-        ***bucket**: name of the bucket
-        **credentials**: create new credential by copying JSON content of service account
-    blocks created:
-        1. GCS Bucket: `gcs-bucket`
-        2. GCp Credentials: `google-creds`
+* **Block name**: name for Block `gcs-bucket`
+* **Bucket**: Name of the cloud storage created in GCP
+* **GCP Credentials**:
+    **Block Name**: name of credential. `google-creds`
+    ***bucket**: name of the bucket
+
+In the GCP console, create a Service Account with Storage Admin permissions for accessing the Cloud Storage Bucket.
+
+* Generate a key for the Service Account in JSON format.
+
+    **credentials**: create new credential by copying JSON content of service account.
+
+![alt text](../images/image-126.png)
+<p align='center'>Authorize connection to Google Cloud Platform services with the Account Service key</p>
+
+![alt text](../images/image-128.png)
+<p align='center'>Creating a new Block in Prefect using the created credentials</p>
+
+Hence the blocks created are:
+
+* GCS Bucket: `gcs-bucket`
+
+* GCp Credentials: `google-creds`
    
-The files for creating GC~s buckets are found in the folder `chapter_3` and `chapter_4` in the repo. [ETL files](Data_Engineering/week_2_workflow_orchestration/chapter_3)
+The files for creating GCS buckets are found in the folder `chapter_3` and `chapter_4` in the repo. [ETL files](Data_Engineering/week_2_workflow_orchestration/chapter_3)
 
 ![alt text](../images/image-125.png)
 
-For more information visit [Prefect documentaion](docs.prefect.io)
+# Pipelines in Python
 
-6. Once the blocks have been defined, you need to create the deployment. Build the prefect deployment using the command line.
+We will be creating Python scripts to perform the three steps of the ETL (Extract, Transform, Load) process. These scripts will handle downloading the CSV file from the repository to the local machine and ingesting it into our BigQuery database. 
+
+To ensure these scripts are interpreted as Prefect workflows, we will add the @flow and @task decorators. It is important to include all the necessary libraries in the imports, especially those related to Prefect.
+
+etl_web_to_gcs.py will Download CSV, impart, export to Parquet and upload to Cloud Storage.
+
+We have a pipeline called `etl_web_to_gcs.py` that performs data extraction. It consists of two extraction methods:
+
+1. `Extract_data_local`: This method downloads the CSV file to a local directory.
+2. `Extract_data_gcs`: This method loads the CSV file transformed to parquet format into Cloud Storage.
+
+The method decorated with `@flow()` serves as the orchestrator, defining the dependencies between tasks and coordinating the execution of the extraction methods.
+
+For more information, please refer to the [Prefect documentation](docs.prefect.io).
+
+```python
+# from matplotlib.textpath import text_to_path
+import pandas as pd
+from prefect import task, flow
+from prefect_gcp.cloud_storage import GcsBucket
+from prefect.tasks import task_input_hash
+from datetime import timedelta
+import os
+
+@task(name='download data from url', log_prints=True, retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+def extract(data_url : str)-> pd.DataFrame:
+    """  
+    Download data from url and return a dataframe.
+
+    :param df: pd.DataFrame 
+    :return df: pd.DataFrame
+    """
+    df: pd.DataFrame = pd.read_csv(data_url)#,parse_dates=[["tpep_pickup_datetime"],"tpep_dropoff_datetime"])
+    print(df.head())
+    return df
+
+@task(name='transformer', log_prints=True)
+def transform(df: pd.DataFrame)-> pd.DataFrame:
+    """
+    Transform/remove 0 passenger counts"
+
+    :param df: pd.Dataframe 
+    :return df: pd.DataFrame
+    """
+    
+    print(f"\n*** Pre: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    df = df[df['passenger_count'] != 0]
+    print(f"\n*** Post: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    return df
+
+@task(name="loader",log_prints=True,) # set to True so that the result is logged in Prefect Cloud
+def write_to_local(df:pd.DataFrame, path: Path)->None:
+    """  
+    Persist the transformed dataset to local
+
+    :param df: Dataframe 
+    :return None: None
+    """
+
+    df.to_parquet(path, compression='gzip')
+ 
+    return path
+
+@task(name="loader",log_prints=True,) # set to True so that the result is logged in Prefect Cloud
+def load(df:pd.DataFrame, path: Path)->None:
+    """  
+    Load the transformed dataset to Gsc Bucket
+
+    :param df: Dataframe 
+    :return None: None
+    """
+
+    gcs_block = GcsBucket.load("gcs-bucket")
+    gcs_block.upload_from_path(from_path=path,
+                            to_path=path)
+    return 
+
+@flow(name='main etl', log_prints=True)
+def main() ->None:
+    """  
+    Main ETL pipeline
+
+    :return None: None
+    """
+    color = 'yellow'
+    year = 2020
+    month = '07'
+    data_file: str = f"{color}_tripdata_{year}-{month}" 
+    data_url: str = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{data_file}.csv.gz"
+    os.makedirs(Path(f"new_data/{color}/"), exist_ok=True)
+    path = Path(f"new_data/{color}/{data_file}.parquet")   
+
+    df: df.DataFrame = extract(data_url)
+    df: df.DataFrame = transform(df)
+    path = write_to_local(df,path)
+
+    load(df, path)
+
+if __name__=='__main__':
+    main()
+```
+
+![alt text](../images/image-129.png)
+<p align='center'>Flow executions in Prefect</p>
+
+![alt text](../images/image-130.png)
+<p align='center'>Parquet stored in Cloud Storage</p>
+
+The pipeline `etl_web_to_gcs.py` is a Prefect flow that downloads a CSV file from a URL, transforms it, and uploads it to a Google Cloud Storage bucket. The flow consists of three tasks:
+
+1. `extract`: Downloads the CSV file from the URL and returns a DataFrame.
+2. `transform`: Removes rows with zero passenger counts from the DataFrame.
+3. `load`: Writes the transformed DataFrame to a local directory and uploads it to the Google Cloud Storage bucket.
+4. `main`: Orchestrates the flow by defining the dependencies between tasks and executing them in the correct order.
 
 
-   ```shell
+etl_gcs_to_bq.py script, ingest parquet into BigQuery from Cloud Storage.
+
+```python
+import pandas as pd
+from pathlib import Path
+from prefect import flow, task
+from prefect_gcp import GcsBucket, GcpCredentials
+from prefect_gcp.bigquery import BigQueryWarehouse
+from prefect.tasks import task_input_hash
+from datetime import timedelta 
+import io
+from sqlalchemy import text
+from google.cloud.exceptions import Conflict
+
+@task(name='extractor', log_prints=True, retries=0, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+def extract(path : str)->pd.DataFrame:
+    """  
+    Extracts data from gcs path
+
+    :param path: gcs path containing data 
+    :return df: pd.Dataframe
+    """
+    gcs_block = GcsBucket.load("gcs-bucket")
+    data = gcs_block.read_path(path)
+    data_bytes = io.BytesIO(initial_bytes=data)
+    df: pd.DataFrame = pd.read_parquet(data_bytes)
+    print(f"df {type(df)} \n {df.head()}")
+    return df
+
+
+@task(name='transformer', log_prints=True)
+def transform(df: pd.DataFrame)-> pd.DataFrame:
+    """  
+    Transform/remove 0 passenger counts"
+
+    :param df: pd.Dataframe 
+    :return df: pd.DataFrame
+    """
+
+    print(f"\n*** Pre: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    df = df[df['passenger_count'] != 0]
+    df["tpep_pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
+    df["tpep_dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
+    print(f"\n*** Post: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    return df
+
+
+@task(name='create gbq table schema', log_prints=True)
+def create_gbq_table_schema(df:pd.DataFrame, tableName:str)-> None:
+    """
+    Create table schema in google BigQuery
+
+    :param df: pd.Dataframe 
+    :param tableName: name of table in Google BigQuery
+
+    :return None: None
+    """
+
+    query = pd.io.sql.get_schema(df, tableName)
+    create_schema = text(query.replace('"','').replace('REAL', 'FLOAT64').replace('TEXT', 'STRING'))
+    print(f"Creating schema \n{create_schema}\n")
+    bigquery_warehouse_block = BigQueryWarehouse.load("gcs-bigquery")
+    try:
+        bigquery_warehouse_block.execute(create_schema.text)
+    except Conflict as e:
+        print(f"Table {tableName} already exists, skipping table creation.")
+        pass
+    return None
+
+@task(name='load data to google BigQuery', log_prints=True)
+def load_to_gbq(df:pd.DataFrame)-> None:
+    """
+    Load dataset to Google Big Query
+    
+    :param df: pd.Dataframe 
+    :return None: None
+    """
+    
+    gcp_crdentials = GcpCredentials.load("gcp-credentials")
+    df.to_gbq(destination_table='de-project-397922.trips_data_all.rides',
+              project_id='de-project-397922',
+              credentials=gcp_crdentials.get_credentials_from_service_account(),
+              chunksize=100_000,
+              if_exists='append')
+    return None
+
+@flow(name='main flow', log_prints=True)
+def main()-> None:
+    """main etl task"""
+    color = 'yellow'
+    year = 2020
+    month = 7
+    data_file = f"{color}_tripdata_{year}-{month:02}" 
+    path = f"new_data/{color}/{data_file}.parquet" 
+    tableName = 'trips_data_all.rides'
+
+    df: pd.DataFrame = extract(path)
+    df: pd.DataFrame = transform(df)
+    # create_gbq_table_schema(df,tableName)
+    load_to_gbq(df)
+    return None
+
+
+if __name__=="__main__":
+    main()
+```
+
+
+Before we can run it and ingest data into GCP, we need to create a table in BigQuery with the schema of the parquet file (which incorporates it in addition to the data itself). To do this, we must access the Google Cloud Platform portal and:
+
+1. Select our project
+2. In the side blade, click on BigQuery
+3. Click on the button + Add Data
+4. Select Google Cloud Storage as the source
+5. In the Source section, select the parquet file that we have previously uploaded. Leave the Parquet format
+6. In the Destination, choose a name for the dataset, for example: dezoomcamp
+7. Define the name of the table: rides
+8. If we access it from the BigQuery explorer, we can see that it has been loaded correctly. But what we want is to load it from our Prefect workflow, so we must truncate it.
+
+Run the script with:
+
+```shell
+python etl_gcs_to_bq.py
+```
+
+![alt text](../images/image-1.png.png)
+
+# Parameterizing the Pipeline Flow
+
+To automate ETLs, we need to parameterize the pipelines we have created. In line with the instructions provided in the videos, we have created a new file where we have copied the code from the two pipelines.
+ 
+Our goal is to replace the hardcoded values for year, month, and color with parameters that will be received from a parent flow. This parent flow will be responsible for invoking the two flows: `etl_web_to_gcs` and `etl_gcs_to_bq`.
+
+```python
+# from matplotlib.textpath import text_to_path
+import pandas as pd
+from prefect import task, flow
+from prefect_gcp.cloud_storage import GcsBucket
+from prefect.tasks import task_input_hash
+from datetime import timedelta
+import os
+
+
+#####
+#ETL to GCS#
+####
+
+@task(name='download data from url', log_prints=True, retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+def extract_data(data_url : str)-> pd.DataFrame:
+    """  
+    Download data from url and return a dataframe.
+
+    :param df: pd.DataFrame 
+    :return df: pd.DataFrame
+    """
+    df: pd.DataFrame = pd.read_csv(data_url)#,parse_dates=[["tpep_pickup_datetime"],"tpep_dropoff_datetime"])
+    print(df.head())
+    return df
+
+@task(name='transformer', log_prints=True)
+def transform_data(df: pd.DataFrame)-> pd.DataFrame:
+    """
+    Transform/remove 0 passenger counts"
+
+    :param df: pd.Dataframe 
+    :return df: pd.DataFrame
+    """
+    
+    print(f"\n*** Pre: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    df = df[df['passenger_count'] != 0]
+    print(f"\n*** Post: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    return df
+
+@task(name="loader",log_prints=True,) # set to True so that the result is logged in Prefect Cloud
+def write_to_local(df:pd.DataFrame, path: Path)->None:
+    """  
+    Persist the transformed dataset to local
+
+    :param df: Dataframe 
+    :return None: None
+    """
+
+    df.to_parquet(path, compression='gzip')
+ 
+    return path
+
+@task(name="loader",log_prints=True,) # set to True so that the result is logged in Prefect Cloud
+def load(df:pd.DataFrame, path: Path)->None:
+    """  
+    Load the transformed dataset to Gsc Bucket
+
+    :param df: Dataframe 
+    :return None: None
+    """
+
+    gcs_block = GcsBucket.load("gcs-bucket")
+    gcs_block.upload_from_path(from_path=path,
+                            to_path=path)
+    return 
+
+@flow(name='main etl', log_prints=True)
+def etl_to_gcs(color: str, year: int, month: str) ->None:
+    """  
+    Main ETL pipeline
+
+    :return None: None
+    """
+    data_file: str = f"{color}_tripdata_{year}-{month}" 
+    data_url: str = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{data_file}.csv.gz"
+    os.makedirs(Path(f"new_data/{color}/"), exist_ok=True)
+    path = Path(f"new_data/{color}/{data_file}.parquet")   
+
+    df: df.DataFrame = extract_data(data_url)
+    df: df.DataFrame = transform_data(df)
+    path = write_to_local(df,path)
+
+    load(df, path)
+
+
+### GCS to BigQuery####
+
+@task(name='extractor', log_prints=True, retries=0, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+def extract(path : str)->pd.DataFrame:
+    """  
+    Extracts data from gcs path
+
+    :param path: gcs path containing data 
+    :return df: pd.Dataframe
+    """
+    gcs_block = GcsBucket.load("gcs-bucket")
+    data = gcs_block.read_path(path)
+    data_bytes = io.BytesIO(initial_bytes=data)
+    df: pd.DataFrame = pd.read_parquet(data_bytes)
+    print(f"df {type(df)} \n {df.head()}")
+    return df
+
+
+@task(name='transformer', log_prints=True)
+def transform(df: pd.DataFrame)-> pd.DataFrame:
+    """  
+    Transform/remove 0 passenger counts"
+
+    :param df: pd.Dataframe 
+    :return df: pd.DataFrame
+    """
+
+    print(f"\n*** Pre: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    df = df[df['passenger_count'] != 0]
+    df["tpep_pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
+    df["tpep_dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
+    print(f"\n*** Post: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    return df
+
+
+@task(name='create gbq table schema', log_prints=True)
+def create_gbq_table_schema(df:pd.DataFrame, tableName:str)-> None:
+    """
+    Create table schema in google BigQuery
+
+    :param df: pd.Dataframe 
+    :param tableName: name of table in Google BigQuery
+
+    :return None: None
+    """
+
+    query = pd.io.sql.get_schema(df, tableName)
+    create_schema = text(query.replace('"','').replace('REAL', 'FLOAT64').replace('TEXT', 'STRING'))
+    print(f"Creating schema \n{create_schema}\n")
+    bigquery_warehouse_block = BigQueryWarehouse.load("gcs-bigquery")
+    try:
+        bigquery_warehouse_block.execute(create_schema.text)
+    except Conflict as e:
+        print(f"Table {tableName} already exists, skipping table creation.")
+        pass
+    return None
+
+@task(name='load data to google BigQuery', log_prints=True)
+def load_to_gbq(df:pd.DataFrame)-> None:
+    """
+    Load dataset to Google Big Query
+    
+    :param df: pd.Dataframe 
+    :return None: None
+    """
+    
+    gcp_crdentials = GcpCredentials.load("gcp-credentials")
+    df.to_gbq(destination_table='de-project-397922.trips_data_all.rides',
+              project_id='de-project-397922',
+              credentials=gcp_crdentials.get_credentials_from_service_account(),
+              chunksize=100_000,
+              if_exists='append')
+    return None
+
+@flow(name='main flow', log_prints=True)
+def gsc_to_gbq(color: str, year: int, month: str)-> None:
+    """main etl task"""
+
+    data_file = f"{color}_tripdata_{year}-{month:02}" 
+    path = f"new_data/{color}/{data_file}.parquet" 
+    tableName = 'trips_data_all.rides'
+
+    df: pd.DataFrame = extract(path)
+    df: pd.DataFrame = transform(df)
+    # create_gbq_table_schema(df,tableName)
+    load_to_gbq(df)
+    return None
+
+
+@flow()
+def etl_parent_flow(months: list[int] = [1,2], year: int = 2021, color: str = "yellow"):
+    for month in months:
+        etl_web_to_gcs(year, month, color)
+        etl_gcs_to_bq(year, month, color)
+    
+
+if __name__ == "__main__":
+    color="yellow"
+    months=[1,2,3]
+    year=2021
+    etl_parent_flow(months, year, color)
+
+```
+
+# Prefect Deployments
+
+A deployment in Prefect is a server-side artifact that encapsulates a flow and allows it to be programmed or launched via API.
+Deployments serve as containers with metadata that include all the necessary components for a flow to be executed. They can be created either through the command line or programmatically using Python.
+A flow can be associated with multiple deployments, providing flexibility and scalability in managing and executing workflows.
+
+![alt text](../images/image-132.png)
+
+
+## Create Prefect Deployment by python
+
+A convenient way to create a deployment is by building a Python script that specifies the necessary properties. By instantiating the class, we can create a new deployment by providing the flow to be executed, the name, the storage or infrastructure (if running on a Docker image), and the entrypoint (if specifying the location of the flow file).
+
+In the following example, we create a deployment specified in (deployment.py) file to run a flow stored in a GitHub repository:
+
+1. After defining the blocks and creating the parameterized script, the next step is to create the deployment. Use the command line to build the Prefect deployment.
+
+
+```python
+from prefect.deployments import Deployment
+from etl_to_gcs import main_flow 
+from prefect.filesystems import GitHub
+
+github_block = GitHub.load("github-block")
+
+deployment = Deployment.build_from_flow(
+            flow=main_flow,
+            name="github-deploy-code",
+            version="1.0",
+            storage=github_block,
+            entrypoint='week_2_workflow_orchestration/homework/etl_to_gcs.py:actual_runner'
+            )
+
+if __name__=='__main__':
+    deployment.apply()
+```
+
+To create the deployment, run the Python script in the terminal:
+
+```shell
+python deployment.py
+```
+
+# Create Prefect Deployment by CLI (command line)
+
+If we create a command line deployment, we must use and pass the pipeline file as a parameter, separated by a colon and the flow name.
+
+```shell
    prefect deployment build parameterized_flow.py:etl_grandparent_flow -n "Parameterized ETL" -a
    ```
 
 To explain the command:
+
+```shell
+prefect deployment build python_file.py:flow_name -n "name of deployment"
+```
+
+ or 
 
 ```shell
 prefect deployment build python_file.py:flow_name -n "name of deployment" -a
@@ -216,24 +733,111 @@ prefect deployment build python_file.py:flow_name -n "name of deployment" -a
 
 The tag:  `-a` to apply at the same time.
 
-It creates a metadata that tells the orhestrator which workflow to deploy.
-This creates a deplpoyment yaml file: `prefect deployment apply etl_grandparent_flow-deployment.yaml`
+When we successfully execute the command, a file is created with all the metadata necessary to program the flow. We can modify and adapt it if necessary. In our case, we want to schedule it to run months 1, 2, and 3 of 2021 for the color yellow.
 
-To change the fow variables you can edit the flow parameters in the yaml file or in the prefect UI: {"color":"yellow", "month":[1,2,3], "year":2021}
+This creates a deployment YAML file: `prefect deployment apply etl_grandparent_flow-deployment.yaml`. You can edit the flow parameters in the YAML file or in the Prefect UI to change the flow variables: `{"color": "yellow", "months": [1, 2, 3], "year": 2021}`.
 
-7; Run the deployment in the prefect deployment UI
+```yaml
+###
+### A complete description of a Prefect Deployment for flow 'parent_flow_runner'
+###
+name: Parameterized ETL
+description: null
+version: ab7f5ea6b27bb55f437f99ae11361a7c
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: null
+tags: []
+parameters: {"color":"yellow", "month":7, "year":2020}
+schedule: null
+is_schedule_active: null
+infra_overrides: {}
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  block_type_slug: process
+  _block_type_slug: process
 
-To do that, start an agent to to run the deployment with the command:
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: parent_flow_runner
+manifest_path: null
+storage: null
+path: /Users/air/Documents/a_zoom_data_engineer/week2/chapter_2
+entrypoint: parameterized_flow.py:etl_grandparent_flow
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    month:
+      title: month
+      position: 0
+      type: integer
+    year:
+      title: year
+      position: 1
+      type: integer
+    color:
+      title: color
+      position: 2
+      type: string
+  required:
+  - month
+  - year
+  - color
+  definitions: null
+timestamp: '2023-11-16T22:14:33.871657+00:00'
+triggers: []
+enforce_parameter_schema: null
+```
+
+Once the yaml has been modified, we can apply the deployment with the command:
 
 ```shell
-    prefect agent start --pool "default-agent-pool
+prefect deployment apply etl_grandparent_flow-deployment.yaml
 ```
+
+To access the deployment we just created, we can navigate to the Prefect GUI at http://127.0.0.1:4200/deployments. In the Deployments section, locate the deployment and click on the Run button. From the popup menu, select Quick Run to specify new parameter values for the run.
+
+![alt text](../images/image-133.png)
+<p align='center'>Prefect deployment</p>
+
+When executing the Deployments, a Work Queue is created that will be responsible for executing them. However, it starts in a dormant state. To activate it, you need to execute the following command:
+
+```shell
+prefect agent start -pool "default-agent-pool" --work-queue "default" 
+```
+
+The Work Queue that is generated has the default name and if we access it we can copy the command to start it.
+
+![alt text](../images/image-134.png)
+<p align='center'>Prefect's Work Queues</p>
+
+Once we start the agent by command line, we observe that it starts executing the Deployment. We can also see the logs in the Prefect GUI.
 
 # Orchestration using Docker via a Dockerfile deployment
 
 When deploying a flow using Docker, you need to create a Dockerfile that specifies the environment and dependencies required to run the flow. This Dockerfile will be used to build a Docker image that contains the flow and its dependencies.
 
-a. create Dockerfile
+First of all, we create a docker-requirementes.txt that specifies the dependencies required to run the flow. This file is used to install the dependencies when building the Docker image.
+
+```txt
+pandas==1.5.2
+prefect-gcp[cloud_storage]==0.2.3
+protobuf==4.21.11
+pyarrow==10.0.1
+pandas-gbq==0.18.1
+```
+
+And then we went on to create the :dockerfile
+
+a. Create Dockerfile
 
 ```dockerfile
 FROM prefecthq/prefect:2.7.7-python3.9
@@ -276,8 +880,7 @@ image pull policy always ensures that the image is always pulled from the reposi
 
 auto remove sets the container to remove itself after the task is completed.
 
-
-# Creating a Docker block in code: an alternative to creating a DockerContainer block in the UI
+We create a Docker Container block, specifying the name and the image name and tags of the image we have just published 'albydel/prefect:DE`.
 
 The files are here:
 
@@ -286,6 +889,8 @@ The files are here:
 1; To create a DockerContainer block in code, you can use the DockerContainer class from the prefect.infrastructure.container module.
 
 ```python
+from prefect.infrastructure.container import DockerContainer
+
 docker_block = DockerContainer(
     image="albydel/prefect:DE",
     image_pull_policy="ALWAYS",
@@ -296,6 +901,7 @@ docker_block.save("zoom", overwrite=True)
 ```
 
 2; Create a deployment file called `docker_deployment.py` to deploy the Docker block from a Python file.
+This parameterized flow is in chapter 4.
 
 ```python
 from prefect.deployments import Deployment 
@@ -314,7 +920,7 @@ if __name__ == "__main__":
     docker_deploy.apply()
 ```
 
-3. Run the deployed task
+1. Run the deployed task
 
 Running this file will deploy the flow using the Docker block created in the previous step.
 
@@ -322,13 +928,17 @@ Running this file will deploy the flow using the Docker block created in the pre
 python docker_deployment.py
 ```
 
+If we run it, we can connect to the GUI to check that the deployment has been created correctly.
+
 4. Checking the profile, it shows that we are using the default profile
 
 ```shell
 prefect profile ls
 ```
 
-5. Use the API endpoint to enable the Docker container to interact with the Prefect server
+To verify that we are connected to the default profile, we can use the following command. Our goal is to replace the ephemeral local API with the API that the agent starts on boot. We can configure the API to use by running the command and providing the URL of the API that Prefect displays when it starts.
+
+1. Use the API endpoint to enable the Docker container to interact with the Prefect server
 
 ```shell
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
@@ -346,6 +956,26 @@ prefect agent start --work-queue "default"
 prefect deployment run parent_flow_runner/docker-flow -p "month=7" -p "color=yellow" -p "year=2020"
 ```
 
+```txt
+ValueError: Path /root/.prefect/storage/44bf1741162a49e8a0a878cc4a87824e does not exist.
+12:45:05.414 | ERROR   | Flow run 'camouflaged-dragonfly' - Finished in state Failed('Flow run encountered an exception. ValueError: Path /root/.prefect/storage/44bf1741162a49e8a0a878cc4a87824e does not exist.\n')
+```
+
+When executing the command it throws an error that it does not find the Prefect volume. The solution is to remove the cache function from the task ingest_data function. To do this, we delete the cachkey function. The image needs to be rebuilt and published to the Docker Hub.
+
+and run again with
+
+```shell
+prefect deployment run parent_flow_runner/docker-flow -p "month=7" -p "color=yellow" -p "year=2020" "cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1)
+```
+
+If everything has gone well, we can see through the agent console or from the Prefect GUI that both the master flow and the children have been executed correctly (there are two of each because when executing the deployment in the parameters we have passed an array with two values: 1,2): `etl-parent-flow`, `etl-web-to-gc`, `etl-gcs-to-bq`
+
+
+![alt text](../images/image-135.png)
+<p align=''></p>
+
+
 # Prefect cloud
 
 Prefect cloud is a 
@@ -354,11 +984,16 @@ Prefect cloud is a
 * Prefect Cloud also offers advanced features such as version control, collaboration tools, and integrations with other services.
 * It is a paid service that offers a free tier with limited features and usage.
 
+So far, we have launched the pipelines from the local Prefect server that we raised when executing the code. Alternatively, we can deploy and launch the flow on [Prefect Cloud's SaaS](https://app.prefect.cloud/). In addition, we have Automations at our disposal, which are triggers that we can use, for example, to notify when a flow has been executed correctly or not. Registration is free, and the interface is practically identical to the local GUI.
+
 To use prefect cloud, you need to create an account and obtain an API key. You can then log in to the Prefect Cloud platform using the API key and create and manage your flows.
 
 Follow these steps:
 
 1. Go to prefect cloud and create API keys
+
+![alt text](../images/image-136.png)
+<p align='center'>Prefect Cloud</p>
 
 2. Login with the API key with commmand
     
@@ -367,43 +1002,34 @@ prefect cloud login -k <API_KEY>
 ```
 
 3; Create `docker block`, `bigquery block`, `gcs bucket block`, `gcp credentials`
-
-3; Create and run the deployment file `python docker_deployment.py`
-
-```python
-from prefect.deployments import Deployment 
-from prefect.infrastructure.container import DockerContainer
-from parameterized_flow import etl_grandparent_flow
-
-docker_block =DockerContainer.load("zoomcontainer") ## NB: zoomcontainer is cloud bucket
-
-docker_deploy = Deployment.build_from_flow(
-                flow=etl_grandparent_flow,
-                name="docker-flow",
-                infrastructure=docker_block
-            )
-
-if __name__=="__main__":
-    docker_deploy.apply()
-```
-
-After this step, you can see your flows in the  UI
-
-To run the flow, activate the agent first with the command:
-
-```shell
-prefect agent start --work-queue "default" --no-cloud-agent
-```
-
-Then run the deployment with the command:
-
-```shell
-prefect deployment run parent_flow_runner/docker-flow -p "month=7" -p "color=yellow" -p "year=2020"
-```
-
 Prefect also allows you to create a github block to run your flows from github. This is done by creating a github block in the prefect UI and specifying the github repository and branch from which the flow will be run.
 
-1. create github block
+We create the blocks that we had previously created in the local instance of Prefect Orion. We can create them from the GUI or by CLI (python scripts). At this point we must take into account that the catalog of blocks available is different from the one we had locally. For example, we do have the Github and GCS Credentials blocks at our disposal, but the GCS Bucket block does not appear, instead we have another one called GCS. After thinking about it a lot, I finally threw the question into slack and Jeff gave me the clue. Even if a block doesn't appear in the Prefect Cloud catalog, we can create it manually from a python script! and voila:
+
+```python
+from prefect_gcp import GcpCredentials
+from prefect_gcp.cloud_storage import GcsBucket
+
+    bucket_block = GcsBucket(
+    gcp_credentials=GcpCredentials.load("zoom-gcp-creds"),
+    bucket="dtc_data_lake_digital-aloe-375022",
+    )
+
+bucket_block.save("zoom-gcs", overwrite=True)
+```
+
+And we run the script:
+
+```shell
+python gcp_bucket_block.py
+```
+
+If we access the blocks in Prefect Cloud we should see the Github, GCP Credentials, GCS Bucket:
+
+![alt text](../images/image-137.png)
+<p align='center'>Block Prefect Cloud</p>
+
+3; We create a script for the Deployment. In the example we are going to use a flow that is downloaded from a repo on Github, for which it is connected through the corresponding block
 
 ```python
 from prefect.deployments import Deployment
@@ -423,6 +1049,52 @@ deployment = Deployment.build_from_flow(
 if __name__=='__main__':
     deployment.apply()
 ```
+
+After this step, you can see your flows in the  UI
+
+To run the flow, activate the agent first with the command:
+
+```shell
+prefect agent start --work-queue "default" --no-cloud-agent
+```
+
+Then run the deployment with the command:
+
+```shell
+prefect deployment run parent_flow_runner/docker-flow -p "month=7" -p "color=yellow" -p "year=2020"
+```
+
+# Prefect Cloud Automations
+
+As I mentioned before, Prefect Cloud automations are like triggers that perform one action as a consequence of another. We can configure them to respond to the execution cycle of a flow or to check the status of the Prefect agent. The available actions are:
+
+* Cancel Flow
+* Stop programming
+* Stop Agent
+* Continue programming
+* Continue Agent
+* Run deployment
+* Send notification
+  
+For our example we're going to use the last one, send notification. We are going to create an automation that sends an email when any flow of our workspace is successfully finished. To do this, first of all, we must create an email-type block:
+
+![alt text](../images/image-138.png)
+
+
+Now we'll create the automation of type Flow run state (we want it to be triggered when a flow is executed). For all flows whose status is changed to Completed:
+
+![alt text](../images/image-139.png)
+
+
+Select the previously created email block and we could modify the email body:
+
+![alt text](../images/image-140.png)
+
+
+If we execute a deployment or flow, if it ends successfully we will receive an email from Prefect with the communication.
+
+![alt text](../images/image-141.png)
+
 
 # Orchestrating dataflow with Mage
 

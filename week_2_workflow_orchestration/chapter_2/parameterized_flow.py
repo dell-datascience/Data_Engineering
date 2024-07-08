@@ -64,8 +64,8 @@ def load_to_gbq(df:pd.DataFrame)-> None:
 def etl_gcs_to_gbq(month: int, year: int, color: str)-> None:
     """main etl task"""
 
-    data_file = f"{color}_tripdata_{year}-{month:02}" 
-    path = f"new_data/{color}/{data_file}.parquet" 
+    data_file = f"{color}_tripdata_{year}-{month:02}"
+    path = f"new_data/{color}/{data_file}.parquet"
     # tableName = 'trips_data_all.rides'
 
     df: pd.DataFrame = extract(path)
