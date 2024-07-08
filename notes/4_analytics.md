@@ -1317,7 +1317,7 @@ this test checks that all tripid primary keys are unique and not null
 
 ![Alt text](../images/image-83.png)
 
-![alt text](image-84.png)
+![alt text](../images/image-84.png)
 
 # Continuous integration
 
@@ -1336,44 +1336,44 @@ before we continue, if we don't see the Run on Pull Requests check? we need to r
 2. Disconnect the current Github configuration by SSH in the project from Account Settingss > Projects (analytics) > Github connection click on edit and at the bottom left appears the Disconnect button.
 3. If we go back to the project configuration screen and click on Repository Details again, we can select the repository provider again. This time instead of cloning, we're going to connect directly to Github and select a repository:
 
-![alt text](image-98.png)
+![alt text](../images/image-98.png)
 <p align='center'>DBT_GITHUB C/I.
 configure dbt integration with github: profile settings-> linked accounts</p>
 
 After configuring continous integration, create a job that is triggered by Continuous integration (CI)
-![alt text](image-99.png)
+![alt text](../images/image-99.png)
 <p align='center'>Create a new job whose trigger is continuous integration CI and activate the Run on Pull Request option</p>
 
-![alt text](image-100.png)
+![alt text](../images/image-100.png)
 
 <p align='center'>Create a new job whose trigger is continuous integration CI and activate the Run on Pull Request option</p>
 
-![alt text](image-101.png)
+![alt text](../images/image-101.png)
 <p align='center'>Create a new job whose trigger is continuous integration CI and activate the Run on Pull Request option</p>
 
 This job is laying domant for now, but when a pull request is initiated , it will run the commands specified. for example,
 
 1. lets make changes to our models, commit changes:
 
-![alt text](image-102.png)
+![alt text](../images/image-102.png)
 <p align='center'>New branch in dbt project to test continuous integration (CI)</p>
 
 2. make a pull request
-![alt text](image-103.png)
+![alt text](../images/image-103.png)
 
 <p align='center'>pull request on github</p>
 
 3. Approve PR from github
-![alt text](image-104.png)
+![alt text](../images/image-104.png)
 
 <p align='center'>Approve PR from github</p>
 
-![alt text](image-105.png)
+![alt text](../images/image-105.png)
 <p align='center'>Merge successful</p>
 
 4. Going to dbt we see that a new job execution executed, triggeres by Github Pull Request#43:
 
-![alt text](image-106.png)
+![alt text](../images/image-106.png)
 Reviewing the steps of the job we see that it was triggered from a PR and that a temporary schema is created in our BigQuery dataset named `dbt_cloud_pr_536565_43`. This schema self-destructs when the job ends.
 
 # Visualizing the data with google looker studio

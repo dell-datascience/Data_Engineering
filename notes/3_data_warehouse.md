@@ -4,6 +4,8 @@
 
 # Week 3 :Data warehouse
 
+The files for this section are found in the [data_warehouse](Data_Engineering/week_3_data_warehouse) folder.
+
 ![alt text](../images/image-95.png)
 
 ![alt text](../images/image-96.png)
