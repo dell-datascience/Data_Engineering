@@ -808,6 +808,11 @@ for our project.
 
 [Terraform basics](https://www.youtube.com/watch?v=dNkEgO-CExg&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=10)
 
+
+The files for teraform are here:
+
+[Terraform files](Data_Engineering/week_2_workflow_orchestration/chapter_2/orchestrations_gcp)
+
 Terraform is a tool for building, changing, and versioning infrastructure
 safely and efficiently. Terraform can manage existing and popular service
 providers as well as custom in-house solutions.

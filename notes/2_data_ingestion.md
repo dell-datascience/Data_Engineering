@@ -75,6 +75,9 @@ _[Back to the top](#table-of-contents)_
 
 ## Orchetrating dataflow with prefect
 
+
+The files for this session are in the folder `chapter_2` in the repo. [ETL files](Data_Engineering/week_2_workflow_orchestration/chapter_2)
+
 1. install requirement.txt
 
 2. Prefect orchestration
@@ -139,26 +142,26 @@ gcs_block = GcsBucket.load("gcs-bucket")
 
 ## Configure Block GCP Cloud Storage Bucket Connector
 
-1. Start prefect server in terminal: `prefect server start`
+1; Start prefect server in terminal: `prefect server start`
 
 To register the **Prefect Connector** module for **Google Cloud Platform** from the command line and make it available for use in our flow, follow these steps:
 
-2. Start by opening the command line interface.
+2; Start by opening the command line interface.
 
-3. Run the following command to register the module:
+3; Run the following command to register the module:
 
-    ```
-    prefect block register -m prefect_gcp
-    ```
+```
+prefect block register -m prefect_gcp
+```
 
-    This command will register the **Prefect Connector** module for **Google Cloud Platform** and make it accessible for use in your flow.
+This command will register the **Prefect Connector** module for **Google Cloud Platform** and make it accessible for use in your flow.
 
-4. Once the registration is complete, you can proceed to use the module in your flow to connect with Google Cloud Platform services.
+4; Once the registration is complete, you can proceed to use the module in your flow to connect with Google Cloud Platform services.
 
 Remember to replace any placeholder values with the actual values specific to your setup.
 
 
-5. Populate the block with conection details to our GCP Storage. Go to the prefect GUI -> blocks -> search for `GCS Bucket`:
+5; Populate the block with conection details to our GCP Storage. Go to the prefect GUI -> blocks -> search for `GCS Bucket`:
 
     * **Block name**: name for Block `gcs-bucket`
     * **Bucket**: Name of the cloud storage created in GCP
@@ -169,6 +172,8 @@ Remember to replace any placeholder values with the actual values specific to yo
     blocks created:
         1. GCS Bucket: `gcs-bucket`
         2. GCp Credentials: `google-creds`
+   
+The files for creating GC~s buckets are found in the folder `chapter_3` and `chapter_4` in the repo. [ETL files](Data_Engineering/week_2_workflow_orchestration/chapter_3)
 
 ![alt text](../images/image-125.png)
 
@@ -194,12 +199,12 @@ This creates a deplpoyment yaml file: `prefect deployment apply etl_grandparent_
 
 To change the fow variables you can edit the flow parameters in the yaml file or in the prefect UI: {"color":"yellow", "month":[1,2,3], "year":2021}
 
-7. Run the deployment in the prefect deployment UI
+7; Run the deployment in the prefect deployment UI
 
 To do that, start an agent to to run the deployment with the command:
 
 ```shell
-  `prefect agent start --pool "default-agent-pool`
+    prefect agent start --pool "default-agent-pool
 ```
 
 ## Orchestration using Docker via a Dockerfile deployment
@@ -252,7 +257,11 @@ auto remove sets the container to remove itself after the task is completed.
 
 ### Creating a Docker block in code: an alternative to creating a DockerContainer block in the UI
 
-1. To create a DockerContainer block in code, you can use the DockerContainer class from the prefect.infrastructure.container module.
+The files are here:
+
+[Flow scripts](/Data_Engineering/week_2_workflow_orchestration/chapter_3/flows)
+
+1; To create a DockerContainer block in code, you can use the DockerContainer class from the prefect.infrastructure.container module.
 
 ```python
 docker_block = DockerContainer(
@@ -264,7 +273,7 @@ docker_block = DockerContainer(
 docker_block.save("zoom", overwrite=True)
 ```
 
-2. Create a deployment file called `docker_deployment.py` to deploy the Docker block from a Python file.
+2; Create a deployment file called `docker_deployment.py` to deploy the Docker block from a Python file.
 
 ```python
 from prefect.deployments import Deployment 
@@ -396,7 +405,7 @@ if __name__=='__main__':
     deployment.apply()
 ```
 
-## Orchetrating dataflow with Mage
+## Orchestrating dataflow with Mage
 
 Mage is an open-source, hybrid framework for transforming and integrating data. It is designed to simplify the process of building data pipelines by providing a unified interface for defining, orchestrating, and monitoring data workflows.
 
