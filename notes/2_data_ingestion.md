@@ -2,6 +2,28 @@
 
 ->Next: [Lesson 3: Data Warehouse](3_data_warehouse.md)
 
+# table of contents
+
+- [table of contents](#table-of-contents)
+- [Week2](#week2)
+- [Data Ingestion](#data-ingestion)
+- [Data Lake](#data-lake)
+  - [What is a Data Lake?](#what-is-a-data-lake)
+  - [Data Lake vs Data Warehouse](#data-lake-vs-data-warehouse)
+  - [ETL vs ELT](#etl-vs-elt)
+  - [Data Swamp - Data Lakes gone wrong](#data-swamp---data-lakes-gone-wrong)
+  - [Data Lake Cloud Providers](#data-lake-cloud-providers)
+- [Orchetrating dataflow with prefect](#orchetrating-dataflow-with-prefect)
+    - [Flow](#flow)
+    - [Task](#task)
+    - [Blocks](#blocks)
+- [Configure Block GCP Cloud Storage Bucket Connector](#configure-block-gcp-cloud-storage-bucket-connector)
+- [Orchestration using Docker via a Dockerfile deployment](#orchestration-using-docker-via-a-dockerfile-deployment)
+- [Creating a Docker block in code: an alternative to creating a DockerContainer block in the UI](#creating-a-docker-block-in-code-an-alternative-to-creating-a-dockercontainer-block-in-the-ui)
+- [Prefect cloud](#prefect-cloud)
+- [Orchestrating dataflow with Mage](#orchestrating-dataflow-with-mage)
+- [Mage setup](#mage-setup)
+
 
 # Week2
 
@@ -73,7 +95,7 @@ Data Lakes are only useful if data can be easily processed from it. Techniques s
 
 _[Back to the top](#table-of-contents)_
 
-## Orchetrating dataflow with prefect
+# Orchetrating dataflow with prefect
 
 
 The files for this session are in the folder `chapter_2` in the repo. [ETL files](Data_Engineering/week_2_workflow_orchestration/chapter_2)
@@ -140,7 +162,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 gcs_block = GcsBucket.load("gcs-bucket")
 ```
 
-## Configure Block GCP Cloud Storage Bucket Connector
+# Configure Block GCP Cloud Storage Bucket Connector
 
 1; Start prefect server in terminal: `prefect server start`
 
@@ -177,7 +199,7 @@ The files for creating GC~s buckets are found in the folder `chapter_3` and `cha
 
 ![alt text](../images/image-125.png)
 
-#### For more information visit [Prefect documentaion](docs.prefect.io)
+For more information visit [Prefect documentaion](docs.prefect.io)
 
 6. Once the blocks have been defined, you need to create the deployment. Build the prefect deployment using the command line.
 
@@ -207,7 +229,7 @@ To do that, start an agent to to run the deployment with the command:
     prefect agent start --pool "default-agent-pool
 ```
 
-## Orchestration using Docker via a Dockerfile deployment
+# Orchestration using Docker via a Dockerfile deployment
 
 When deploying a flow using Docker, you need to create a Dockerfile that specifies the environment and dependencies required to run the flow. This Dockerfile will be used to build a Docker image that contains the flow and its dependencies.
 
@@ -255,7 +277,7 @@ image pull policy always ensures that the image is always pulled from the reposi
 auto remove sets the container to remove itself after the task is completed.
 
 
-### Creating a Docker block in code: an alternative to creating a DockerContainer block in the UI
+# Creating a Docker block in code: an alternative to creating a DockerContainer block in the UI
 
 The files are here:
 
@@ -324,10 +346,7 @@ prefect agent start --work-queue "default"
 prefect deployment run parent_flow_runner/docker-flow -p "month=7" -p "color=yellow" -p "year=2020"
 ```
 
-
-
-
-## Prefect cloud
+# Prefect cloud
 
 Prefect cloud is a 
 * cloud-based orchestration platform that allows you to manage and monitor your flows from a centralized location.
@@ -405,11 +424,11 @@ if __name__=='__main__':
     deployment.apply()
 ```
 
-## Orchestrating dataflow with Mage
+# Orchestrating dataflow with Mage
 
 Mage is an open-source, hybrid framework for transforming and integrating data. It is designed to simplify the process of building data pipelines by providing a unified interface for defining, orchestrating, and monitoring data workflows.
 
-## Mage setup
+# Mage setup
 
 This repo contains a Docker Compose template for getting started with a new Mage project. It requires Docker to be installed locally.
 
@@ -447,7 +466,7 @@ Now, navigate to <http://localhost:6789> in your browser! Voila! You're ready to
 
 ![alt text](../images/image-91.png)
 
-## define docker postgress connector in `io_config.yml` in mage files. the postgres instance is defined in docker
+Define docker postgress connector in `io_config.yml` in mage files. the postgres instance is defined in docker
 
 ```yml
 dev:
