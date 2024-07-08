@@ -2,6 +2,48 @@
 
 ->Next: [Lesson 5: Batch Processing](5_batch_processing.md)
 
+
+# Table of contents
+
+- [Table of contents](#table-of-contents)
+- [Analytics Engineering](#analytics-engineering)
+  - [Data Build Tool (dbt)](#data-build-tool-dbt)
+  - [Some of the main features of dbt](#some-of-the-main-features-of-dbt)
+  - [How to get started with dbt?](#how-to-get-started-with-dbt)
+  - [Install dbt Core with PIP](#install-dbt-core-with-pip)
+  - [create new python environment](#create-new-python-environment)
+  - [Install dbt Core with a Docker image](#install-dbt-core-with-a-docker-image)
+  - [Create project in DTB Cloud](#create-project-in-dtb-cloud)
+  - [Create service account + JSON Key for Big Query](#create-service-account--json-key-for-big-query)
+  - [Create a BigQuery service account](#create-a-bigquery-service-account)
+  - [Creating first dbt project](#creating-first-dbt-project)
+- [How to setup dbt cloud with bigquery](#how-to-setup-dbt-cloud-with-bigquery)
+  - [Create a dbt cloud project](#create-a-dbt-cloud-project)
+  - [Add GitHub repository](#add-github-repository)
+  - [Review your project settings](#review-your-project-settings)
+  - [(Optional) Link to your github account](#optional-link-to-your-github-account)
+  - [DBT Model](#dbt-model)
+  - [The FROM clause in a dbt model](#the-from-clause-in-a-dbt-model)
+  - [Macros](#macros)
+  - [Package](#package)
+  - [Variables](#variables)
+  - [Seed](#seed)
+- [Use Case](#use-case)
+  - [6.1 Run the dbt model](#61-run-the-dbt-model)
+  - [7.1 run dbt command](#71-run-dbt-command)
+  - [8.1 Run the dbt command](#81-run-the-dbt-command)
+  - [9.1 Run the dbt command](#91-run-the-dbt-command)
+  - [Merge all](#merge-all)
+  - [Run dbt command](#run-dbt-command)
+  - [NB](#nb)
+- [NB](#nb-1)
+- [DBT test](#dbt-test)
+- [dbt production environment](#dbt-production-environment)
+- [Continuous integration](#continuous-integration)
+- [Visualizing the data with google looker studio](#visualizing-the-data-with-google-looker-studio)
+- [Reports in Google Data Studio (reports)](#reports-in-google-data-studio-reports)
+
+
 # Analytics Engineering
 
 ![Alt text](../images/image-13.png)
@@ -242,15 +284,6 @@ create schema in big query
 
 * dbt_staging
 
-Table of Contents
-=================
-
-* [How to setup dbt cloud with bigquery](#how-to-setup-dbt-cloud-with-bigquery)
-  * [Create a BigQuery service account](#create-a-bigquery-service-account)
-  * [Create a dbt cloud project](#create-a-dbt-cloud-project)
-  * [Add GitHub repository](#add-github-repository)
-  * [Review your project settings](#review-your-project-settings)
-  * [(Optional) Link to your github account](#optional-link-to-your-github-account)
 
 # How to setup dbt cloud with bigquery
 
@@ -360,19 +393,19 @@ Let's look at it with two examples:
 
 We run and build **`all`** the models:
 
-```
+```shell
 dbt run
 ```
 
 TO build only the `myModel.sql` we run:
 
-```
+```shell
 dbt run --select myModel.sql
 ```
 
 when we run the model, dbt compiles it into the following
 
-```
+```sql
 CREATE TABLE my_schema.my_ymodel AS (
     SELECT *
     FROM staging.source_table 
@@ -387,7 +420,7 @@ In addition to directly specifying the schema and table name, there are two ways
 Sources
 They are used when the source is a database table (BigQuery, PostgreSQL...). The connection is configured in a `schema file.yml` that we must create in the same directory where the model is located. It is possible to indicate whether we want to periodically check whether the connection is operational or not (source freshness). When constructing the model, we substitute the **"schema.table name"** by a macro in jinja notation that will fetch this data from the yml configuration file. For example, the source `()` macro contains the name of the source indicated in the yml and the name of the table. `FROM`
 
-```
+```sql
 {{ config(materialized='view') }}
 
 SELECT *
@@ -584,8 +617,6 @@ FROM {{ source('staging','green_tripdata') }}
 <p align='center'>dbt run --select stg_partitioned_database_cluster_trips_data_all  --vars 'is_test_run : false'</p>
 
 ## Seed
-
-## Seeds
 
 Similar to the External Tables of BigQuery or Azure Synapse, we can reference any CSV file stored in the repository within the directory, as it is stored in a repo we can take advantage of its version control. It is recommended to use seeds for data that does not change frequently (parametric dimension tables, such as provinces). `/seeds`
 

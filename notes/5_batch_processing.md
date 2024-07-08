@@ -1,8 +1,31 @@
 ->Back : [Lesson 4: Analytics Engineering](4_analytics.md)
 
-# *Batch Processing*
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [Batch Processing](#batch-processing)
+  - [Batch processing](#batch-processing-1)
+  - [Streaming processing](#streaming-processing)
+  - [Batch processing](#batch-processing-2)
+- [Apache Spark](#apache-spark)
+  - [Spark Architecture](#spark-architecture)
+  - [Resilient Distributed Datasets (RDD)](#resilient-distributed-datasets-rdd)
+  - [Directed Acyclic Graph (DAG)](#directed-acyclic-graph-dag)
+  - [Spark Ecosystem](#spark-ecosystem)
+  - [SparkSession](#sparksession)
+  - [Spark DataFrames with CSV and Parquet](#spark-dataframes-with-csv-and-parquet)
+  - [CSV](#csv)
+  - [Parquet](#parquet)
+  - [Partitions](#partitions)
+  - [pySpark transformation and Action](#pyspark-transformation-and-action)
+  - [Spark Features](#spark-features)
+  - [Built-in](#built-in)
+- [User-defined functions (UDFs)](#user-defined-functions-udfs)
+- [Working with DataFrames and Spark SQL](#working-with-dataframes-and-spark-sql)
+- [NY Taxis DataFrames](#ny-taxis-dataframes)
+  - [GroupBy on Spark](#groupby-on-spark)
+  - [Join in Spark](#join-in-spark)
 
-## Setup
+# Batch Processing
 
 Data Processing
 
@@ -497,3 +520,4 @@ In Spark we can combine two DataFrames as if they were two relational tables usi
 
 df = df1.join(df2, on='id', how='left')
 ```
+

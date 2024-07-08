@@ -2,6 +2,35 @@
 
 ->Next: [Lesson 4: Analytics Engineering](4_analytics.md)
 
+# Table of contents
+- [Week 3 :Data warehouse](#week-3-data-warehouse)
+- [Table of contents](#table-of-contents)
+- [Week 3 :Data warehouse](#week-3-data-warehouse)
+  - [Google Big query](#google-big-query)
+  - [External tables](#external-tables)
+  - [Google BigQuery Optimization](#google-bigquery-optimization)
+  - [Partitioning](#partitioning)
+  - [Clustering](#clustering)
+  - [When to use partitioning and clustering?](#when-to-use-partitioning-and-clustering)
+  - [SQL Best Practices for Optimizing Queries](#sql-best-practices-for-optimizing-queries)
+  - [Google BigQuery Architecture](#google-bigquery-architecture)
+    - [Borg: Container Orchestrator](#borg-container-orchestrator)
+    - [Jupyter: Network](#jupyter-network)
+    - [Dremel: Execution Engine](#dremel-execution-engine)
+    - [Colossus: Distributed Storage](#colossus-distributed-storage)
+  - [Big query and machine learning](#big-query-and-machine-learning)
+  - [SELECT THE COLUMNS INTERESTED FOR YOU](#select-the-columns-interested-for-you)
+  - [CREATE ML TABLE](#create-ml-table)
+  - [CREATE MODEL](#create-model)
+  - [CHECK FEATURE MODEL](#check-feature-model)
+  - [EVALUATE MODEL](#evaluate-model)
+  - [PREDICT THE MODEL](#predict-the-model)
+  - [PREDICT AND EXPLAIN](#predict-and-explain)
+  - [HYPER PARAM TUNNING](#hyper-param-tunning)
+
+
+
+
 # Week 3 :Data warehouse
 
 The files for this section are found in the Data_Engineering/week_3_data_warehouse folder in my repo.

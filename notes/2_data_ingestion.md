@@ -2,9 +2,9 @@
 
 ->Next: [Lesson 3: Data Warehouse](3_data_warehouse.md)
 
-# table of contents
+# Table of contents
 
-- [table of contents](#table-of-contents)
+- [Table of contents](#table-of-contents)
 - [Week2](#week2)
 - [Data Ingestion](#data-ingestion)
 - [Data Lake](#data-lake)
