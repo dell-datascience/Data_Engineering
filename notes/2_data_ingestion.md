@@ -178,6 +178,8 @@ prefect server start
 
 ![alt text](../images/image-127.png)
 <p align='center'>Output when starting Prefect</p>
+
+
 # Configure Block GCP Cloud Storage Bucket Connector
 
 Then, register the Prefect Connector module for Google Cloud Platform (GCP) from the command line to make it available for use in your flow. To do this, run the following command:
