@@ -904,7 +904,7 @@ docker_block = DockerContainer(
 docker_block.save("zoom", overwrite=True)
 ```
 
-2; Create a deployment file called `docker_deployment.py` to deploy the Docker block from a Python file.
+2; Create a deployment python file called `docker_deployment.py` to instantiate the Docker block in Prefect.
 This parameterized flow is in chapter 4.
 
 ```python
