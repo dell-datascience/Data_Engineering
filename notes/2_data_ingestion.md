@@ -472,7 +472,8 @@ Run the script with:
 python etl_gcs_to_bq.py
 ```
 
-![alt text](../images/image-1.png.png)
+![alt text](../images/image-131.png)
+<p align='center'>GSC data loaded to GBQ</p>
 
 # Parameterizing the Pipeline Flow
 
