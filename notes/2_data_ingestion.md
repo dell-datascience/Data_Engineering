@@ -228,6 +228,7 @@ Hence the blocks created are:
 The files for creating GCS buckets are found in the folder `chapter_3` and `chapter_4` in the repo. [ETL files](Data_Engineering/week_2_workflow_orchestration/chapter_3)
 
 ![alt text](../images/image-125.png)
+<p align='center'>GCS-bucket and Google credential blocks created</p>
 
 # Pipelines in Python
 
