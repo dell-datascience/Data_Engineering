@@ -476,9 +476,6 @@ We can use three different types of jinja blocks within a [macro](https://docs.g
 
 * `Statements` : These are used for flow control, for example, for loops or statements.
 
-```md
-{% %} FOR IF
-```
   
 * `Comments`: The text of the comment is not compiled, it allows us to indicate notes.
 
