@@ -1,6 +1,0 @@
-[submodule "week_4_analytics_engineering/dbt_prde/data_engineering_dbt"]
-	path = week_4_analytics_engineering/dbt_prde/data_engineering_dbt
-	url = https://github.com/dell-datascience/data_engineering_dbt.git
-[submodule "week_4_analytics_engineering/data_engineering_dbt"]
-	path = week_4_analytics_engineering/data_engineering_dbt
-	url = https://github.com/dell-datascience/data_engineering_dbt.git
