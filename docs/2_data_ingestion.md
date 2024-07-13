@@ -1153,6 +1153,7 @@ dev:
   POSTGRES_PASSWORD: "{{ env_var('POSTGRES_PASSWORD') }}"
   POSTGRES_HOST: "{{ env_var('POSTGRES_HOST') }}"
   POSTGRES_PORT: "{{ env_var('POSTGRES_PORT') }}"
+  
 ```
 
 ![alt text](../images/image-93.png)
