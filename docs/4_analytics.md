@@ -468,11 +468,11 @@ A dbt macro is similar to a function in any other language written in jinja nota
 
 We can use three different types of jinja blocks within a [macro](https://docs.getdbt.com/docs/build/jinja-macros):
 
-* `Expressions` : when we want to return a string. Expressions can be used to reference variables or call other macros. `{{ }}`
+* `Expressions` : when we want to return a string. Expressions can be used to reference variables or call other macros. **`{{ }}`**
 
-* `Statements` : These are used for flow control, for example, for loops or statements. `{% %} FOR IF`
+* `Statements` : These are used for flow control, for example, for loops or statements. **`{% %} FOR IF`**
   
-* `Comments`: The text of the comment is not compiled, it allows us to indicate notes. `{# #}`
+* `Comments`: The text of the comment is not compiled, it allows us to indicate notes. **`{# #}`**
 
 we create the macros `get_payment_type_description` that receives a value called `payment_type`
 
