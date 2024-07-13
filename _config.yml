@@ -13,3 +13,6 @@ exclude:
   - "week_5_batch/"
   - "workshop/"
   - "main.txt"
+
+include:
+  - "/docs/1_introduction.md"
