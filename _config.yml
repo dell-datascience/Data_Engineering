@@ -1,17 +1,16 @@
 theme: jekyll-theme-minimal
 title: Data Engineering
 exclude:
-  exclude:
-    - .git
-    - .gitignore
-    - .github
-    - .git attributes
-    - .git modules
-    - week_1_basics_and_setup/*
-    - week_2_workflow_orchestration/*
-    - week_3_data_warehouse/*
-    - week_4_analytics_engineering/*
-    - week_5_batch/*
-    - workshop/*
-    - README.md
-    - main.txt
+  - .git
+  - .gitignore
+  - .github
+  - .git attributes
+  - .git modules
+  - week_1_basics_and_setup/*
+  - week_2_workflow_orchestration/*
+  - week_3_data_warehouse/*
+  - week_4_analytics_engineering/*
+  - week_5_batch/*
+  - workshop/*
+  - README.md
+  - main.txt
