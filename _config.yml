@@ -13,6 +13,6 @@ exclude:
   - "week_5_batch/"
   - "workshop/"
   - "main.txt"
-
+  - "/docs/4_analytics.md"
 include:
   - "/docs/1_introduction.md"
