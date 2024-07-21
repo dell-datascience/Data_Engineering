@@ -1,2 +1,6 @@
-command = "jekyll build"
-publish = "_site"
+[build]
+  command = "bundle exec jekyll build"
+  publish = "_site"
+
+[build.environment]
+  BUNDLE_PATH = "vendor/bundle"
