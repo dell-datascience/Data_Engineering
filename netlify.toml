@@ -4,3 +4,4 @@
 
 [build.environment]
   BUNDLE_PATH = "vendor/bundle"
+  RUBY_VERSION = "2.7.2"
