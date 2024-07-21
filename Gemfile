@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-ruby '2.7.2'  # Add this line
+ruby '2.6.10'  # Add this line
 
-gem 'jekyll', '~> 4.2.0'
+gem 'jekyll', '~> 3.9.5'
 gem 'jekyll-macro'  # Include your necessary plugins here
 
 group :jekyll_plugins do
