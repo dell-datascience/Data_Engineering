@@ -7,3 +7,6 @@ gem 'jekyll'
 gem 'github-pages', group: :jekyll_plugins
 
 # Other plugins and dependencies
+group :jekyll_plugins do
+    gem 'github-pages'  # Optional if you are using GitHub Pages as well
+  end
