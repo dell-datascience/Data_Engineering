@@ -257,7 +257,10 @@ PLATFORMS
 
 DEPENDENCIES
   github-pages
-  jekyll
+  jekyll (~> 3.9.5)
+
+RUBY VERSION
+   ruby 2.6.10p210
 
 BUNDLED WITH
    1.17.2
