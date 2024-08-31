@@ -474,14 +474,10 @@ We can use three different types of jinja blocks within a [macro](https://docs.g
 {{ }}
 ```
 
-* `Statements` : These are used for flow control, for example, for loops or statements.
+* `Statements` : These are used for flow control, for example, for loops or statements. `{% %} FOR IF`
 
   
-* `Comments`: The text of the comment is not compiled, it allows us to indicate notes.
-
-```md
-{# #}
-```
+* `Comments`: The text of the comment is not compiled, it allows us to indicate notes. `{# #}`
 
 we create the macros `get_payment_type_description` that receives a value called `payment_type`
 
@@ -490,7 +486,7 @@ we create the macros `get_payment_type_description` that receives a value called
     This macro returns the description of the payment_type 
 #}
 
-{% `get_payment_type_description`(payment_type) -%}
+{% macro `get_payment_type_description`(payment_type) %}
 
     case {{ payment_type }}
         when 1 then 'Credit card'
@@ -500,7 +496,7 @@ we create the macros `get_payment_type_description` that receives a value called
         when 5 then 'Unknown'
         when 6 then 'Voided trip'
     end
-
+ 
 {% endmacro %}
 ```
 
