@@ -469,7 +469,7 @@ A dbt macro is similar to a function in any other language written in jinja nota
 We can use three different types of jinja blocks within a [macro](https://docs.getdbt.com/docs/build/jinja-macros):
 
 * `Expressions` : when we want to return a string. Expressions can be used to reference variables or call other macros. 
-
+ 
 ```md
 {{ }}
 ```
