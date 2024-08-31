@@ -1,1 +1,10 @@
 theme: jekyll-theme-minimal
+
+# Optional settings
+markdown: kramdown
+plugins:
+  - jekyll-seo-tag
+  - jekyll-paginate
+  - jekyll-sitemap
+
+paginate: 5
