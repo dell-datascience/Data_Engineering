@@ -474,31 +474,7 @@ We can use three different types of jinja blocks within a [macro](https://docs.g
 {{ }}
 ```
 
-* `Statements` : These are used for flow control, for example, for loops or statements. `{% %} FOR IF`
-
-  
-* `Comments`: The text of the comment is not compiled, it allows us to indicate notes. `{# #}`
-
-we create the macros `get_payment_type_description` that receives a value called `payment_type`
-
-```sql
- {#
-    This macro returns the description of the payment_type 
-#}
-
-{% macro `get_payment_type_description`(payment_type) %}
-
-    case {{ payment_type }}
-        when 1 then 'Credit card'
-        when 2 then 'Cash'
-        when 3 then 'No charge'
-        when 4 then 'Dispute'
-        when 5 then 'Unknown'
-        when 6 then 'Voided trip'
-    end
- 
-{% endmacro %}
-```
+![alt text](../images/image-142.png)
 
 We use the macro in our dbt model:
 
