@@ -176,9 +176,10 @@ gcs_block = GcsBucket.load("gcs-bucket")
 
         1. go to prefect cloud and create API keys
 
-         API Keys: pnu_qAPZT8DpmvaTDoTA5EPxjFFwLAycLS3fokcu
+
+         API Keys: api>
          or run
-         `prefect cloud login -k pnu_qAPZT8DpmvaTDoTA5EPxjFFwLAycLS3fokcu`
+         `prefect cloud login -k <api>`
 
          2. create `docker block`, `bigquery block`, `gcs bucket block`, `gcp credentials`
 
@@ -212,15 +213,9 @@ gcs_block = GcsBucket.load("gcs-bucket")
 
 10. create github block
 
-## Do not commit this
+
 
  ---  
- recent prefect api key for login: pnu_j0SfatphK6kNibJOpIWfI4oAHKWoxn2ArneX
-
-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
-
-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
----
 
 ```python
 from prefect.deployments import Deployment

@@ -3,7 +3,6 @@
 ->Next: [Lesson 4: Analytics Engineering](4_analytics.md)
 
 # Table of contents
-- [Week 3 :Data warehouse](#week-3-data-warehouse)
 - [Table of contents](#table-of-contents)
 - [Week 3 :Data warehouse](#week-3-data-warehouse)
   - [Google Big query](#google-big-query)
@@ -29,17 +28,15 @@
   - [HYPER PARAM TUNNING](#hyper-param-tunning)
 
 
-
-
 # Week 3 :Data warehouse
 
 The files for this section are found in the Data_Engineering/week_3_data_warehouse folder in my repo.
 
-![alt text](../images/image-95.png)
+In this section we will cover Google Cloud platform account and work with the Google BigQuery data warehouse. We will also cover the optimization of queries and the use of machine learning models in BigQuery.
 
-![alt text](../images/image-96.png)
+Before continuig  it is important to understand the difference between OLTP and OLAP databases:
 
-| Column 1 | OLTP | OLAP |
+|  | OLTP | OLAP |
 |----------|----------|----------|
 | Purpose| Short, fast updates initiated by user| Data periodically refreshed with scheduled, long-running batch jobs|
 |Database design | Normalized databases for efficiency | Denormalized databases for analysis|
@@ -52,12 +49,27 @@ The files for this section are found in the Data_Engineering/week_3_data_warehou
 ## Google Big query
 
 ![Alt text](../images/image.png)
+<p align="center">Google Big Query Interface</p>
 
-BigQuery (BQ) is a Data Warehouse solution offered by Google Cloud Platform.
+BigQuery (BQ) is a Data Warehouse solution offered by Google Cloud Platform. Some of the main features of BQ are:
 
-* BQ is serverless. There are no servers to manage or database software to install; this is managed by Google and it's transparent to the customers.
+* **serverless**: There are no servers to manage or database software to install; this is managed by Google and it's transparent to the customers.
 
-* BQ is scalable and has high availability. Google takes care of the underlying software and infrastructure.
+* **scalable** and has high **availability**: It can handle an increase in data volume without disruption. Google takes care of the underlying software and infrastructure making it available at all times.
+
+* **Cloud storage**: It allows you to store large amounts of data in the Google's cloud and not have to worry about the infrastructure.
+
+* **Real-time analytics**: It allows real-time queries of large data sets using SQL-like queries.
+
+* **INtegration with Google tools**: It integrates with other Google Cloud services like Dataflow, Dataproc, Dataprep, and Data Studio.
+
+* **SQL queries**: BigQuery enables real-time SQL queries on large datasets. It suppports sql transformations, joins, subqueries, and window functions.
+
+* **Pay-as-you-go**: BigQuery enables you to pay only for the queries you run. You can also choose to reserve capacity for a flat rate.
+
+* **Security an compliance**: BigQuery offers a widfe range of security and compliacnce features such as SOC 2, ISO/IEC 27001, and PCI DSS compliant. It also supports HIPAA compliance.
+
+* **Support for different data formats**: BiqQuery supports a wide range of data formats such as CSV, JSON, Avro, Parquet, and ORC. So users can load data in any format they prefer.
 
 * BQ has built-in features like Machine Learning, Geospatial Analysis and Business Intelligence among others.
 
@@ -65,7 +77,7 @@ BigQuery (BQ) is a Data Warehouse solution offered by Google Cloud Platform.
 
 ## External tables
 
-External tables are objects that are similar to views of a database. Only that this time the database isn't really a database but files in some cloud storage or another database. It stores only the schema in BQ and only infers the data from the extenal files when creating the object. External tables have the same characteristics as a standard table in BigQuery, with their properties, access management, metadata, and so on. The only difference is that they are a view, the data is in another location.
+External tables are objects that are similar to views of a database. Only that this time the database isn't really a database in BigQuery but files in a cloud storage like GCS or another database outside GCP. It stores only the schema in BQ and only infers the data from the extenal files when creating the object. External tables have the same characteristics as a standard table in BigQuery, with their properties, access management, metadata, and so on. The only difference is that they are a view, the data is in another location.
 
 For example, instead of ingesting a CSV into a table in the BigQuery database, let's create an external table to directly access the data without persisting:
 
@@ -85,11 +97,11 @@ Unlike a relational database, BigQuery doesn't support indexes to streamline SQL
 
 A partitioned table is a table divided into segments aka partitions based on the values of a column. Slicing a table greatly speeds up queries because the data you need to retrieve is much smaller than if you had to read the entire table. BigQuery offers three types of partitions:
 
-* **Integer Range Partitioning**: Partitions are created based on the numeric value of a column of type . For example, by the country code.`INTEGER`
+* **Pertitioning by Integer Ranges**: Partitions are created based on the numeric value of a column of type . For example, by the country code.`INTEGER`
 
-* **Partitioning columns per unit of time**: The most common partition, the table is partitioned by a column of type , or .`DATETIMESTAMP DATETIME`
+* **Partitioning of columns per unit of time**: The most common partition, the table is partitioned by a column of type such as`DATETIMESTAMP DATETIME`
 
-* **Ingestion-time partitioning**: BigQuery automatically assigns rows to partitions based on when BigQuery transfers data. You can choose the level of detail by hour, day, month, or year for partitions. It has a limit of 4k partitions. The column is added and in each tuple the value of the moment in which the data was stored is assigned.`_PARTITIONTIME`
+* **Partitioning by ingestion time**: BigQuery automatically assigns rows to partitions based on when BigQuery transfers data. You can choose the level of detail by hour, day, month, or year for partitions. It has a limit of 4k partitions. The column is added and in each tuple the value of the moment in which the data was stored is assigned.`PARTITIONTIME`
 
 Partitions are used to improve performance when you have large datasets that require frequent queries on specific date ranges or time intervals. For example we creata a new table from a query and add the partition by column `tpep_pickup_datetime`
 
@@ -101,6 +113,7 @@ SELECT * FROM trips_data_all.rides LIMIT 50;
 ```
 
 ![Alt text](../images/image-1.png)
+<p align="center">Partition in Google Big Query</p>
 
 Partitions are used to improve query performance as they allow you to filter data based on partition keys. This can significantly reduce the amount of data that is processed.
 
